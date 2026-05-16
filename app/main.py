@@ -8,6 +8,22 @@ from app.load.metadata_loader import (
 )
 from app.utils.logger import logger
 
+from app.transform.github_transformer import (
+    transform_repositories,
+    transform_contributors,
+    transform_commits,
+    transform_pull_requests
+)
+
+from app.load.processed_loader import (
+    load_repositories,
+    load_contributors,
+    load_commits,
+    load_pull_requests
+)
+
+from app.load.raw_reader import fetch_raw_events
+
 def filter_new_events(events, last_timestamp):
 
     if not last_timestamp:
@@ -55,10 +71,23 @@ def run_pipeline():
 
     if not new_events:
 
-        print("⚠️ No new events found")
-        return
+        logger.info(
+            "No new events found. "
+            "Using existing raw events."
+        )
+
+        new_events = fetch_raw_events()
 
     store_raw_events(new_events)
+    repositories = transform_repositories(new_events)
+    contributors = transform_contributors(new_events)
+    commits = transform_commits(new_events)
+    pull_requests = transform_pull_requests(new_events)
+
+    load_repositories(repositories)
+    load_contributors(contributors)
+    load_commits(commits)
+    load_pull_requests(pull_requests)
 
     latest_timestamp = max(
         datetime.strptime(
