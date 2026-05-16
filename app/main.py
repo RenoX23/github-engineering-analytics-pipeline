@@ -1,26 +1,21 @@
-from sqlalchemy import create_engine
-from dotenv import load_dotenv
-import os
+from app.extract.extractors import fetch_repo_events
+from app.load.raw_loader import store_raw_events
+from app.utils.logger import logger
 
-load_dotenv()
+def run_pipeline():
 
-DB_USER = os.getenv("POSTGRES_USER")
-DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-DB_HOST = os.getenv("POSTGRES_HOST")
-DB_PORT = os.getenv("POSTGRES_PORT")
-DB_NAME = os.getenv("POSTGRES_DB")
+    owner = "apache"
+    repo = "airflow"
 
-DATABASE_URL = (
-    f"postgresql://{DB_USER}:{DB_PASSWORD}"
-    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
+    logger.info("Starting GitHub ETL pipeline")
 
-try:
-    engine = create_engine(DATABASE_URL)
+    events = fetch_repo_events(owner, repo)
 
-    with engine.connect() as connection:
-        print("✅ PostgreSQL connection successful!")
+    store_raw_events(events)
 
-except Exception as e:
-    print("❌ Connection failed:")
-    print(e)
+    logger.info("Raw events stored successfully")
+
+    print("✅ Pipeline executed successfully!")
+
+if __name__ == "__main__":
+    run_pipeline()
