@@ -585,6 +585,14 @@ The ETL pipeline itself executes successfully in the local environment, and Airf
 
 # Screenshots 📸
 
+![SQL SCHEMA](screenshots/sql_schema.png)
+
+![CONTAINERS](screenshots/docker_containers.png)
+![LOGS](screenshots/pipeline_log.png)
+![LOGIN](screenshots/airflow_login.png)
+![AIRFLOW PIPELINE](screenshots/airflow_pipeline.png)
+![DAG](screenshots/dag_pipeline.png)
+
 ## Recommended Screenshots
 
 Add screenshots for:
